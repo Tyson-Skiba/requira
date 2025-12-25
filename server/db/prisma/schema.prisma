@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../db/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                Int     @id @default(autoincrement())
+  username          String  @unique
+  avatar            String?
+  email             String
+  password          String  @default("")
+  requiresApproval  Boolean @default(false)
+  isApprover        Boolean @default(true)
+  musicLibraryPath  String?
+  bookLibraryPath   String?
+  isAdmin           Boolean @default(false)
+  canSeeFullLibrary Boolean @default(true)
+  theme             String  @default("light")
+  requestedQueues   Queue[] @relation("RequestUser")
+  approvedQueues    Queue[] @relation("ApproverUser")
+}
+
+model Queue {
+  id               Int      @id @default(autoincrement())
+  type             Int
+  cover            String
+  data             String
+  external_id      String
+  request_user_id  Int
+  approver_user_id Int?
+  created_at       DateTime @default(now())
+  attempts         Int
+  request_user     User     @relation("RequestUser", fields: [request_user_id], references: [id])
+  approver_user    User?    @relation("ApproverUser", fields: [approver_user_id], references: [id])
+}
+
+model Song {
+  id             Int       @id @default(autoincrement())
+  recording_mbid String?
+  artist_mbid    String?
+  title          String
+  artist         String
+  album          String?
+  release_date   DateTime?
+  isrc           String?
+  cover          String?
+  filepath       String
+  external_id    String
+  created_at     DateTime  @default(now())
+  source         String?
+  cache_key      Int       @default(1)
+
+  @@map("songs")
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  external_id String
+  authors     String?
+  title       String?
+  publisher   String?
+  year        Int?
+  pages       Int?
+  language    String?
+  size        String?
+  extension   String?
+  mirror      String?
+  cover       String?
+  filepath    String
+  created_at  DateTime @default(now())
+  cache_key   Int      @default(1)
+
+  @@map("books")
+}
+
+model SourceBlacklist {
+  id     Int    @id @default(autoincrement())
+  source String @unique
+}

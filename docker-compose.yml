@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  requira:
+    build: .
+    container_name: requira
+    restart: unless-stopped
+    environment:
+      - PUID=100
+      - PGID=10
+      - TZ==Australia/Melbourne
+      - REQUIRA_SONG_DOWNLOAD_LOCATION=/songs
+      - REQUIRA_BOOK_DOWNLOAD_LOCATION=/books
+      - REQUIRA_HOST=http://localhost:7421
+      - JWT_SECRET="Z9F7sQmB!4kR2x@H8NwP#3dE5A6VYcT1L0"
+      - JWT_REFRESH_SECRET="x3K8!rP2@qz9L#vN7sDfG5yHjKlM0tBv"
+      - ADMIN_USERNAME=Tyson
+      - ADMIN_PASSWORD=secret
+    volumes:
+      - ./example/container/requira:/requira
+      - ./example/container/books:/books
+      - ./example/container/songs:/songs
+    ports:
+      - 7421:3022
