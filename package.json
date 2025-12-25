@@ -1,5 +1,5 @@
 {
-  "name": "requestor-server",
+  "name": "requira",
   "version": "1.0.0",
   "main": "server/api.js",
   "license": "MIT",

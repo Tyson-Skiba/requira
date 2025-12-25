@@ -1,6 +1,8 @@
+# Requira
 
+To start run `yarn dev`
 
-## Migration
+## Schema Change
 
 `npx prisma migrate dev --name name`
 
