@@ -45,7 +45,6 @@ router.post("/:id/song", upload.single("cover"), async (req, res) => {
   const songPath = await getPathFromSongId(req.params.id!);
 
   let coverPath: string | undefined;
-
   if (req.file) {
     coverPath = `${songPath}.cover.jpg`;
     fs.writeFileSync(coverPath, req.file.buffer);
@@ -93,6 +92,7 @@ router.get("/:id/book/cover", async (req, res) => {
 router.get("/:id/song/cover", async (req, res) => {
   const songPath = await getPathFromSongId(req.params.id);
   const cover = await extractMusicCover(songPath);
+  console.log(songPath);
   if (!cover) return res.status(404).send();
   res.setHeader("Content-Type", cover.mime);
   res.send(cover.buffer);

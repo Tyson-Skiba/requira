@@ -3,7 +3,6 @@ version: "3.8"
 services:
   requira:
     build: .
-    container_name: requira
     restart: unless-stopped
     environment:
       - PUID=100

@@ -2,14 +2,19 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../services/database";
+import { UserRoles } from "../../models/users/role";
 
-const generateTokens = (userId: number) => {
-  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET!, {
+const generateTokens = (userId: number, roles: UserRoles[]) => {
+  const accessToken = jwt.sign({ userId, roles }, process.env.JWT_SECRET!, {
     expiresIn: "15m",
   });
-  const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: "2d",
-  });
+  const refreshToken = jwt.sign(
+    { userId, roles },
+    process.env.JWT_REFRESH_SECRET!,
+    {
+      expiresIn: "2d",
+    },
+  );
   return { accessToken, refreshToken };
 };
 
@@ -27,7 +32,9 @@ export const login = async (
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const roles: UserRoles[] = ["User"];
+    if (user.isAdmin) roles.push("Admin");
+    const { accessToken, refreshToken } = generateTokens(user.id, roles);
 
     res.cookie("auth", accessToken, {
       httpOnly: true,

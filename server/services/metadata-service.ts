@@ -6,7 +6,7 @@ import xml2js from "xml2js";
 import axios from "axios";
 import path from "path";
 import mm from "music-metadata";
-import { execFile } from "child_process";
+import { execFile, spawn } from "child_process";
 import { prisma } from "./database";
 
 export type EpubMetadata = {
@@ -213,7 +213,7 @@ export const autofillFromMusicBrainz = async (recordingId: string) => {
         fmt: "json",
       },
       headers: {
-        "User-Agent": "TuneTale/1.0.0",
+        "User-Agent": "Requira/1.0.0",
       },
     },
   );
@@ -333,6 +333,21 @@ export const readAudioMetadata = async (path: string) => {
   };
 };
 
+const run = (cmd: string, args: string[]) =>
+  new Promise<void>((resolve, reject) => {
+    const p = spawn(cmd, args, { stdio: "pipe" });
+
+    let stderr = "";
+    p.stderr.on("data", (d) => (stderr += d.toString()));
+
+    p.on("error", reject);
+    p.on("close", (code) =>
+      code === 0
+        ? resolve()
+        : reject(new Error(`${cmd} exited ${code}\n${stderr}`)),
+    );
+  });
+
 export const writeAudioMetadata = async (
   filePath: string,
   meta: {
@@ -347,54 +362,38 @@ export const writeAudioMetadata = async (
     coverPath?: string;
   },
 ) => {
-  const tmp = `${filePath}.tmp${path.extname(filePath)}`;
-
-  const args = [
-    "-i",
+  // ---- 1. Update tags ----
+  await run("metaflac", [
+    "--remove-all-tags",
+    `--set-tag=TITLE=${meta.title}`,
+    `--set-tag=ARTIST=${meta.artist}`,
+    `--set-tag=ALBUM=${meta.album}`,
+    `--set-tag=ALBUMARTIST=${meta.albumArtist}`,
+    `--set-tag=TRACKNUMBER=${meta.track}`,
+    `--set-tag=DISCNUMBER=${meta.disc}`,
+    `--set-tag=DATE=${meta.year}`,
+    `--set-tag=GENRE=${meta.genre}`,
     filePath,
-    ...(meta.coverPath ? ["-i", meta.coverPath, "-map", "0", "-map", "1"] : []),
-    "-c",
-    "copy",
-    "-metadata",
-    `title=${meta.title}`,
-    "-metadata",
-    `artist=${meta.artist}`,
-    "-metadata",
-    `album=${meta.album}`,
-    "-metadata",
-    `album_artist=${meta.albumArtist}`,
-    "-metadata",
-    `track=${meta.track}`,
-    "-metadata",
-    `disc=${meta.disc}`,
-    "-metadata",
-    `date=${meta.year}`,
-    "-metadata",
-    `genre=${meta.genre}`,
-    ...(meta.coverPath
-      ? [
-          "-metadata:s:v",
-          "title=Album cover",
-          "-metadata:s:v",
-          "comment=Cover (front)",
-        ]
-      : []),
-    tmp,
-  ];
+  ]);
 
-  await new Promise<void>((resolve, reject) => {
-    execFile(ffmpegPath!, args, (err) => (err ? reject(err) : resolve()));
-  });
+  // ---- 2. Handle artwork ----
+  if (meta.coverPath) {
+    // Remove existing pictures
+    await run("metaflac", ["--remove", "--block-type=PICTURE", filePath]);
 
-  //await fs.move(tmp, filePath, { overwrite: true })
-
-  fs.renameSync(tmp, filePath);
+    // Add new picture
+    await run("metaflac", [
+      `--import-picture-from=${meta.coverPath}`,
+      filePath,
+    ]);
+  }
 };
 
 export const extractMusicCover = async (
   filePath: string,
 ): Promise<{ buffer: Buffer<ArrayBuffer>; mime: string } | null> => {
   const metadata = await mm.parseFile(filePath);
+
   const pic = metadata.common.picture?.[0];
   if (!pic) return null;
 

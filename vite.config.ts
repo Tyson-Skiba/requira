@@ -4,17 +4,17 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default ({ mode }: ConfigEnv) => {
-  const env = loadEnv(mode, process.cwd(), "REQUESTOR_");
+  const env = loadEnv(mode, process.cwd(), "REQUIRA_");
 
   return defineConfig({
     root: "./client",
     plugins: [react()],
-    envPrefix: "REQUESTOR",
+    envPrefix: "Requira",
     server: {
       proxy:
         mode === "development"
           ? {
-              "/api": env.REQUESTOR_API_URL || "http://localhost:3022",
+              "/api": env.REQUIRA_API_URL || "http://localhost:3022",
             }
           : undefined,
       host: true,

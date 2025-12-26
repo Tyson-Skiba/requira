@@ -7,11 +7,12 @@ PGID=${PGID:-1000}
 echo "🔐 Using PUID=$PUID PGID=$PGID"
 
 if ! getent group appgroup >/dev/null 2>&1; then
-  addgroup -g "$PGID" appgroup
+  addgroup appgroup || echo "GID $PGID already exists, using default"
 fi
 
+
 if ! id appuser >/dev/null 2>&1; then
-  adduser -D -u "$PUID" -G appgroup appuser
+  adduser -D -u "$PUID" -G appgroup appuser || echo "User exists"
 fi
 
 chown -R appuser:appgroup /requira /books /songs || true

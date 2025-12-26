@@ -9,11 +9,16 @@ import {
 import { BaseDialog } from "./BaseDialog";
 import { useEffect, useState } from "react";
 import { User } from "../../../../models/users/user";
+import { useAuth } from "../../context/AuthContext";
+
+type EditableUserParts = Omit<User, "id" | "theme" | "isAdmin"> & {
+  password: string;
+};
 
 interface AddUserDialogProps {
   open: boolean;
   user?: User;
-  onSave: (user: Omit<User, "id"> & { password: string }) => void;
+  onSave: (user: EditableUserParts) => void;
   onClose: () => void;
 }
 
@@ -23,6 +28,7 @@ export const AddUserDialog: React.FC<AddUserDialogProps> = ({
   onClose,
   onSave,
 }) => {
+  const { user: currentUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isApprover, setIsApprover] = useState(false);
@@ -112,11 +118,13 @@ export const AddUserDialog: React.FC<AddUserDialogProps> = ({
           label="Full Library Access"
         />
 
-        <Box display="flex" justifyContent="flex-end" mt={1}>
-          <Button variant="contained" onClick={handleSubmit}>
-            {!user ? "Add User" : "Save Changes"}
-          </Button>
-        </Box>
+        {currentUser.isAdmin ? (
+          <Box display="flex" justifyContent="flex-end" mt={1}>
+            <Button variant="contained" onClick={handleSubmit}>
+              {!user ? "Add User" : "Save Changes"}
+            </Button>
+          </Box>
+        ) : null}
       </Stack>
     </BaseDialog>
   );

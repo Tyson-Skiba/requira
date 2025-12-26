@@ -88,18 +88,11 @@ export const search = async (
       );
       const existingIds = existingItems.map(({ external_id }) => external_id);
 
-      console.log({
-        existingIds,
-        queuedIds,
-      });
-
       results = results.map((result) => ({
         ...result,
         queued: queuedIds.includes(result.id),
         downloaded: existingIds.includes(result.id),
       }));
-
-      console.log(results);
 
       res.json(results);
     } catch (err: any) {

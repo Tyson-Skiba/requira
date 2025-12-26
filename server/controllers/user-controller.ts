@@ -29,7 +29,7 @@ export const createUser = async (
   next: NextFunction,
 ) => {
   try {
-    if (req.user?.role !== "admin") return res.status(401);
+    if (!req.user?.roles.includes("Admin")) return res.status(401);
 
     const password = await hashPassword(String(req.query.password));
     const users = await prisma.user.create({

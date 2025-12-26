@@ -46,5 +46,5 @@ EXPOSE 3022
 #CMD ["sh", "-c", "mkdir -p /requira && npx prisma migrate deploy --config=prisma.config.ts && exec node server/dist/api.js"]
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN apk add --no-cache su-exec
+RUN apk add --no-cache su-exec python3 py3-pip flac
 ENTRYPOINT ["/entrypoint.sh"]

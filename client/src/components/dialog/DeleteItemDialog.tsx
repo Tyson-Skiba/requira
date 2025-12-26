@@ -138,7 +138,10 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           Cancel
         </Button>
         <Button
-          onClick={() => onConfirm(removeData, avoidRelease)}
+          onClick={() => {
+            onConfirm(removeData, avoidRelease);
+            onCancel();
+          }}
           color="error"
           variant="contained"
           disabled={loading}

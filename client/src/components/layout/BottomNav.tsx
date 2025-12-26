@@ -2,8 +2,10 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { navItems } from "./NavItems";
+import { useAuth } from "../../context/AuthContext";
 
 export const MobileBottomNav: React.FC = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -25,7 +27,10 @@ export const MobileBottomNav: React.FC = () => {
         onChange={(_, newValue) => navigate(newValue)}
         showLabels
       >
-        {navItems.map(({ label, to, icon, solid }) => {
+        {navItems({
+          isAdmin: user.isAdmin,
+          isMobile: false,
+        }).map(({ label, to, icon, solid }) => {
           const isActive = location.pathname === to;
           return (
             <BottomNavigationAction

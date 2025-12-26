@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { UserRoles } from "../../models/users/role";
 
 export const authMiddleware = async (
   req: Request,
@@ -16,6 +17,7 @@ export const authMiddleware = async (
     if (accessToken) {
       const decoded = jwt.verify(accessToken, process.env.JWT_SECRET!) as {
         userId: number;
+        roles: UserRoles[];
       };
       req.user = decoded;
       return next();
@@ -25,7 +27,7 @@ export const authMiddleware = async (
       const decodedRefresh = jwt.verify(
         refreshToken,
         process.env.JWT_REFRESH_SECRET!,
-      ) as { userId: number };
+      ) as { userId: number; roles: UserRoles[] };
 
       const newAccessToken = jwt.sign(
         { userId: decodedRefresh.userId },
@@ -40,7 +42,7 @@ export const authMiddleware = async (
         maxAge: 15 * 60 * 1000,
       });
 
-      req.user = { userId: decodedRefresh.userId };
+      req.user = decodedRefresh;
       return next();
     }
   } catch (err) {

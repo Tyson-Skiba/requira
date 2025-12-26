@@ -30,6 +30,7 @@ import { AddUserDialog } from "../components/dialog/AddUserDialog";
 import { BaseDialog } from "../components/dialog/BaseDialog";
 import { usersApi } from "../api/users";
 import { User } from "../../../models/users/user";
+import { useAuth } from "../context/AuthContext";
 
 const getUser = (userId: number | undefined, users: User[]) => {
   if (!userId || userId === -1) return undefined;
@@ -38,6 +39,7 @@ const getUser = (userId: number | undefined, users: User[]) => {
 
 export const UserManagementPage: React.FC = () => {
   const theme = useTheme();
+  const { user } = useAuth();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [users, setUsers] = useState<User[]>([]);
@@ -207,21 +209,24 @@ export const UserManagementPage: React.FC = () => {
                 </TableCell>
               </TableRow>
             ))}
-            <TableRow
-              sx={{
-                borderTop: (theme) => `2px solid ${theme.palette.action.hover}`,
-              }}
-            >
-              <TableCell align="right" colSpan={6}>
-                <Button
-                  variant="contained"
-                  onClick={() => setUserContext(-1)}
-                  sx={{ width: isMobile ? "100%" : "auto" }}
-                >
-                  Add User
-                </Button>
-              </TableCell>
-            </TableRow>
+            {user.isAdmin ? (
+              <TableRow
+                sx={{
+                  borderTop: (theme) =>
+                    `2px solid ${theme.palette.action.hover}`,
+                }}
+              >
+                <TableCell align="right" colSpan={6}>
+                  <Button
+                    variant="contained"
+                    onClick={() => setUserContext(-1)}
+                    sx={{ width: isMobile ? "100%" : "auto" }}
+                  >
+                    Add User
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
       </TableContainer>

@@ -1,17 +1,26 @@
 // navItems.tsx
 import {
+  BellIcon,
   HomeIcon,
   EnvelopeIcon,
   UserGroupIcon,
+  HandRaisedIcon,
 } from "@heroicons/react/24/outline";
 
 import {
+  BellIcon as SolidBellIcon,
   HomeIcon as SolidHomeIcon,
   EnvelopeIcon as SolidEnvelopeIcon,
   UserGroupIcon as SolidUserGroupIcon,
+  HandRaisedIcon as SolidHandRaisedIcon,
 } from "@heroicons/react/24/solid";
 
-export const navItems = [
+interface NavItemsParams {
+  isMobile: boolean;
+  isAdmin: boolean;
+}
+
+export const navItems = ({ isAdmin, isMobile }: NavItemsParams) => [
   {
     label: "My Library",
     to: "/",
@@ -22,13 +31,17 @@ export const navItems = [
   {
     label: "Requests",
     to: "/requests",
-    icon: <EnvelopeIcon height={24} />,
-    solid: <SolidEnvelopeIcon height={24} />,
+    icon: <HandRaisedIcon height={24} />,
+    solid: <SolidHandRaisedIcon height={24} />,
   },
   {
-    label: "Users",
-    to: "/users",
-    icon: <UserGroupIcon height={24} />,
-    solid: <SolidUserGroupIcon height={24} />,
+    label: isAdmin ? "Users" : "My Profile",
+    to: isAdmin ? "/users" : "/profile",
+    icon: isAdmin ? <UserGroupIcon height={24} /> : <BellIcon height={24} />,
+    solid: isAdmin ? (
+      <SolidUserGroupIcon height={24} />
+    ) : (
+      <SolidBellIcon height={24} />
+    ),
   },
 ];

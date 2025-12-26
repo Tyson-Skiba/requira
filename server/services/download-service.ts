@@ -37,7 +37,11 @@ export const downloadSong = async (request: Queue) => {
 
   try {
     console.log(`Searching for song ${query}`);
-    const info = await ytdlp.getInfoAsync(`ytsearch1:${query}`);
+    const info = await ytdlp.getInfoAsync(`ytsearch1:${query}`, {
+      // @ts-expect-error: ytdlp-nodejs typings are incomplete
+      args: ["--js-runtimes", "node"],
+    });
+
     const video = (info as PlaylistInfo).entries?.[0];
 
     if (!video?.url) throw new Error("No video found");
@@ -55,10 +59,16 @@ export const downloadSong = async (request: Queue) => {
     await ytdlp.downloadAsync(video.url, {
       output: tempFlac,
       format: "bestaudio",
-      // @ts-expect-error: extra args not in type definition args: ["--extract-audio", "--audio-format", "flac"],
-      args: ["--extract-audio", "--audio-format", "flac"],
+      // @ts-expect-error: ytdlp-nodejs typings are incomplete
+      args: [
+        "--js-runtimes",
+        "node",
+        "--extract-audio",
+        "--audio-format",
+        "flac",
+      ],
       onProgress: (p) => {
-        console.log("Downloading");
+        console.log(`Downloading: ${video.url} ${p.percentage_str}`);
       },
     });
 
