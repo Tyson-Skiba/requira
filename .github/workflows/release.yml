@@ -23,7 +23,10 @@ jobs:
       - name: Build Docker image
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          docker build -t tskiba/requira:latest -t tskiba/requira:$VERSION .
+          docker build \
+            -t tskiba/requira:latest \
+            -t tskiba/requira:$VERSION \
+            .
 
       - name: Push Docker image
         run: |
