@@ -15,6 +15,7 @@ services:
       - JWT_REFRESH_SECRET="x3K8!rP2@qz9L#vN7sDfG5yHjKlM0tBv"
       - ADMIN_USERNAME=Tyson
       - ADMIN_PASSWORD=secret
+      - BOOK_SOURCE_URL=
     volumes:
       - ./example/container/requira:/requira
       - ./example/container/books:/books

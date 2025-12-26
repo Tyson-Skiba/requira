@@ -26,8 +26,7 @@ interface DownloadResult {
   total: number;
 }
 
-// https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.v3.json
-const adapter = new LibGenBookProvider("https://libgen.li/");
+const adapter = new LibGenBookProvider(process.env.BOOK_SOURCE_URL!);
 
 function sanitizeFilename(name: string): string {
   return name

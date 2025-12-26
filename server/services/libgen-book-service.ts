@@ -53,7 +53,7 @@ export class LibGenBookProvider {
       const url = element.children[0]?.querySelector("a")?.href;
 
       const id = url
-        ? new URL(url, "https://libgen.li/").searchParams.get("id")!
+        ? new URL(url, process.env.BOOK_SOURCE_URL!).searchParams.get("id")!
         : "-1";
 
       const coverRel = element.children[0]?.querySelector("img")?.src;
