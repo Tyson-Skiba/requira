@@ -38,5 +38,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             -t tskiba/requira:$VERSION \
             $( [ "$LATEST_TAG" = "true" ] && echo "-t tskiba/requira:latest" ) \
+            --cache-from=type=registry,ref=tskiba/requira:cache \
+            --cache-to=type=registry,ref=tskiba/requira:cache,mode=max \
             --push \
             .
