@@ -36,6 +36,7 @@ jobs:
           fi
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
+            --network=host \
             -t tskiba/requira:$VERSION \
             $( [ "$LATEST_TAG" = "true" ] && echo "-t tskiba/requira:latest" ) \
             --cache-from=type=registry,ref=tskiba/requira:cache \

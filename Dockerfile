@@ -2,7 +2,7 @@
 FROM node:22.12.0-alpine AS client-build
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000
 COPY tsconfig*.json ./
 COPY vite.config.ts ./
 COPY client ./client
@@ -16,7 +16,7 @@ WORKDIR /app
 
 ENV DATABASE_URL=file:/requira/service.db
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000
 COPY tsconfig*.json ./
 COPY server ./server
 COPY models ./models
@@ -36,7 +36,7 @@ COPY --from=server-build /app/dist/server ./server/dist
 COPY --from=server-build /requira /requira
 
 COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
 ENV DATABASE_URL=file:/requira/service.db
 COPY ./prisma.config.ts /app/prisma.config.ts 
