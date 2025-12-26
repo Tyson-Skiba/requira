@@ -20,17 +20,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build Docker image
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          docker build \
-            --platform linux/amd64,linux/arm64 \
-            -t tskiba/requira:latest \
-            -t tskiba/requira:$VERSION \
-            .
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
-      - name: Push Docker image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          docker push tskiba/requira:latest
-          docker push tskiba/requira:$VERSION
+          if [[ "$VERSION" != *-* ]]; then
+            LATEST_TAG="true"
+          else
+            LATEST_TAG="false"
+          fi
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t tskiba/requira:$VERSION \
+            $( [ "$LATEST_TAG" = "true" ] && echo "-t tskiba/requira:latest" ) \
+            --push \
+            .
