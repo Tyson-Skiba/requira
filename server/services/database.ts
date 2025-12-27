@@ -3,13 +3,15 @@ import { Request } from "express";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../db/prisma/client";
 import { hashPassword } from "../controllers/user-controller";
-import { queueActivityType } from "../../models/activity/activity-type";
+import { ActivityType } from "../../models/activity/activity-type";
 import { UserRoles } from "../../models/users/role";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
 const adapter = new PrismaBetterSqlite3({ url: connectionString });
 const prisma = new PrismaClient({ adapter });
+
+const queueActivityType: ActivityType = "add_to_queue";
 
 export const dataTypes = {
   music: 1,

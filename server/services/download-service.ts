@@ -10,10 +10,10 @@ import { Queue } from "../db/prisma";
 import { prisma } from "./database";
 import { LibGenEntry } from "../../models/books/lib-gen-entry";
 import { logger } from "./log-service";
-import {
-  downloadSuccessActivityType,
-  failedDownloadActivityType,
-} from "../../models/activity/activity-type";
+import { ActivityType } from "../../models/activity/activity-type";
+
+const downloadSuccessActivityType: ActivityType = "download_succeeded";
+const failedDownloadActivityType: ActivityType = "failed_to_download";
 
 const sessions = new Map();
 
