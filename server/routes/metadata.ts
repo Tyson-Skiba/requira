@@ -14,8 +14,11 @@ import {
   writeAudioMetadata,
 } from "../services/metadata-service";
 import { prisma } from "../services/database";
+import { logger } from "../services/log-service";
+import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
+router.use(authMiddleware);
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/:id/book", upload.single("cover"), async (req, res) => {
@@ -84,6 +87,10 @@ router.get("/recording_id/:id", async (req, res) => {
 router.get("/:id/book/cover", async (req, res) => {
   const epubPath = await getPathFromBookId(req.params.id);
   const coverBuffer = await extractBookCover(epubPath);
+
+  logger.debug(
+    `Requesting cover for book ${req.params.id}, cover found: ${coverBuffer ? "yes" : "no"}`,
+  );
   if (!coverBuffer) return res.status(404).send();
   res.setHeader("Content-Type", "image/jpeg");
   res.send(coverBuffer);
@@ -92,7 +99,10 @@ router.get("/:id/book/cover", async (req, res) => {
 router.get("/:id/song/cover", async (req, res) => {
   const songPath = await getPathFromSongId(req.params.id);
   const cover = await extractMusicCover(songPath);
-  console.log(songPath);
+
+  logger.debug(
+    `Requesting cover for song ${req.params.id}, cover found: ${cover ? "yes" : "no"}`,
+  );
   if (!cover) return res.status(404).send();
   res.setHeader("Content-Type", cover.mime);
   res.send(cover.buffer);

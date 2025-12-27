@@ -8,6 +8,7 @@ import {
   queueItem,
 } from "../services/database";
 import { Prisma } from "../db/prisma";
+import { logger } from "../services/log-service";
 
 const musicBrainzProvider = new MusicBrainzProvider();
 
@@ -96,7 +97,7 @@ export const search = async (
 
       res.json(results);
     } catch (err: any) {
-      console.error("MusicBrainz search error:", err.message);
+      logger.error("MusicBrainz search error:", err.message);
       res.status(500).send("MusicBrainz search failed");
     }
   } catch (error) {
@@ -121,17 +122,25 @@ export const queue = async (
     cover,
   } = req.query;
 
-  const item = await queueItem("music", cover as string, mbid as string, {
-    query,
-    mbid,
-    title,
-    artist,
-    album,
-    releaseDate,
-    artistMbid,
-    isrc,
-    cover,
-  });
+  const item = await queueItem(
+    "music",
+    cover as string,
+    mbid as string,
+    {
+      query,
+      mbid,
+      title,
+      artist,
+      album,
+      releaseDate,
+      artistMbid,
+      isrc,
+      cover,
+    },
+    req.user!,
+  );
+
+  logger.info(`Queued song ${title} for download`);
 
   res.json(item);
 };
@@ -153,9 +162,9 @@ export const remove = async (
 
     if (req.query.remove === "true") {
       const songPath = song.filepath;
-      console.log(`Deleting ${songPath}`);
+      logger.info(`Deleting song at ${songPath}`);
       fs.unlinkSync(songPath);
-      console.log(`Deleted ${song.title}`);
+      logger.info(`Deleted song ${song.title}`);
     }
 
     if (req.query.avoid === "true") {
@@ -165,7 +174,7 @@ export const remove = async (
         },
       });
 
-      console.log(`Blacklisted ${song.source}`);
+      logger.info(`Blacklisted song ${song.source}`);
     }
 
     await prisma.song.delete({
@@ -174,7 +183,7 @@ export const remove = async (
       },
     });
 
-    console.log(`Removed ${song.title} from library`);
+    logger.info(`Removed song ${song.title} from library`);
   } catch (error) {
     next(error);
   }

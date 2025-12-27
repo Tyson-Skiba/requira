@@ -6,8 +6,11 @@ import {
   search,
   remove,
 } from "../controllers/song-controller";
+import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
+
+router.use(authMiddleware);
 
 router.get("/", get);
 router.get("/search", search);

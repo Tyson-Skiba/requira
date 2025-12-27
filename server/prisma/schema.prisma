@@ -22,6 +22,11 @@ model User {
   theme             String @default("light")
   requestedQueues   Queue[] @relation("RequestUser")
   approvedQueues    Queue[] @relation("ApproverUser")
+
+  activities ActivityLog[] @relation("ActionTriggerer")
+
+  songs Song[] @ignore @relation("OwnerUserSong")
+  books Book[] @ignore @relation("OwnerUserBook")
 }
 
 model Queue {
@@ -53,6 +58,8 @@ model Song {
   created_at      DateTime @default(now())
   source          String?
   cache_key       Int @default(1)
+  owner_user_id   Int @default(1)
+  owner           User @relation("OwnerUserSong", fields: [owner_user_id], references: [id])
 
   @@map("songs")
 }
@@ -74,7 +81,21 @@ model Book {
   created_at  DateTime @default(now())
   cache_key   Int @default(1)
 
+  owner_user_id   Int @default(1)
+  owner           User @relation("OwnerUserBook", fields: [owner_user_id], references: [id])
+
   @@map("books")
+}
+
+model ActivityLog {
+  id                      Int       @id @default(autoincrement())
+  triggered_by_user_id    Int 
+  type                    String
+  details                 String
+  entityId                Int?
+  entityType              String?
+
+  triggered_by            User @relation("ActionTriggerer", fields: [triggered_by_user_id], references: [id])
 }
 
 model SourceBlacklist {

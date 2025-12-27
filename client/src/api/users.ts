@@ -1,8 +1,16 @@
 import { User } from "../../../models/users/user";
-import fetch from "../../../node_modules/node-fetch-native/lib/index.d";
+import { Activity } from "../../../models/activity/activity";
+import { PagedRequest } from "../../../models/PagedRequest";
 
 const getAll = async (): Promise<User[]> => {
   const request = await fetch("/api/users");
+  return await request.json();
+};
+
+const getActivities = async (
+  cursor?: number,
+): Promise<PagedRequest<Activity>> => {
+  const request = await fetch(`/api/users/activities?cursor=${cursor}`);
   return await request.json();
 };
 
@@ -75,4 +83,5 @@ export const usersApi = {
   remove,
   resetPassword,
   updateAvatar,
+  getActivities,
 };

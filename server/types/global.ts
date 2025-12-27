@@ -2,7 +2,7 @@ import { UserRoles } from "../../models/users/role";
 
 declare module "express-serve-static-core" {
   interface Request {
-    user?: { userId: number; roles: UserRoles[] };
+    user: { userId: number; roles: UserRoles[] };
   }
 }
 

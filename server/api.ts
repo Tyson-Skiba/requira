@@ -13,6 +13,7 @@ import { QueueProvider } from "./services/queue-service";
 
 import "./types/global";
 import path from "path";
+import { logger } from "./services/log-service";
 
 createAdminAccount();
 
@@ -64,5 +65,5 @@ if (process.env.NODE_ENV === "production") {
 app.use(errorHandler);
 
 app.listen(3022, () => {
-  console.log(`Server running on port 3022`);
+  logger.info("Running requira api on port 3022");
 });

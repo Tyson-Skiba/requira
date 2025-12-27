@@ -3,6 +3,12 @@ import bcrypt from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../services/database";
 import { UserRoles } from "../../models/users/role";
+import { logger } from "../services/log-service";
+
+interface HttpUser {
+  userId: number;
+  roles: UserRoles[];
+}
 
 const generateTokens = (userId: number, roles: UserRoles[]) => {
   const accessToken = jwt.sign({ userId, roles }, process.env.JWT_SECRET!, {
@@ -34,6 +40,8 @@ export const login = async (
 
     const roles: UserRoles[] = ["User"];
     if (user.isAdmin) roles.push("Admin");
+    if (user.isApprover) roles.push("Approver");
+
     const { accessToken, refreshToken } = generateTokens(user.id, roles);
 
     res.cookie("auth", accessToken, {
@@ -49,6 +57,10 @@ export const login = async (
     });
 
     user.password = "";
+
+    logger.debug(
+      `${user.username} has logged in, user has roles ${roles.join(", ")}`,
+    );
 
     res.json(user);
   } catch (error) {
@@ -81,23 +93,24 @@ export const refresh = (req: Request, res: Response, next: NextFunction) => {
   if (!token) return res.status(401).json({ error: "No refresh token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
-      userId: number;
-    };
-    const newAccessToken = jwt.sign(
-      { userId: decoded.userId },
-      process.env.JWT_SECRET!,
-      { expiresIn: "15m" },
-    );
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_REFRESH_SECRET!,
+    ) as HttpUser;
 
-    res.cookie("auth", newAccessToken, {
+    const { accessToken } = generateTokens(decoded.userId, decoded.roles);
+
+    res.cookie("auth", accessToken, {
       httpOnly: true,
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
     });
 
+    logger.debug(`Generated access token for user ${decoded.userId}`);
+
     res.json({ success: true });
   } catch {
+    logger.debug(`Unable to refresh token due to expirary`);
     res.status(401).json({ error: "Refresh token expired" });
   }
 };
@@ -105,5 +118,7 @@ export const refresh = (req: Request, res: Response, next: NextFunction) => {
 export const logout = (req: Request, res: Response, next: NextFunction) => {
   res.clearCookie("auth", { httpOnly: true, sameSite: "strict" });
   res.clearCookie("refresh", { httpOnly: true, sameSite: "strict" });
+
+  logger.debug(`User with id ${req.user?.userId} logged out`);
   res.json({ success: true });
 };

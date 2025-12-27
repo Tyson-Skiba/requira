@@ -13,6 +13,7 @@ import {
 } from "../services/database";
 import { getPathFromBookId } from "../services/metadata-service";
 import { Prisma } from "../db/prisma";
+import { logger } from "../services/log-service";
 
 interface Download {
   stream: AxiosResponse;
@@ -181,7 +182,7 @@ export const search = async (
   try {
     const term = req.query.term as string;
     const url = adapter.getSearchURL(term, 1, 25);
-    console.log(url);
+    logger.debug(`Searching for book using url ${url}`);
     const pageDocument = await attemptWithRetry(() => getDocument(url));
     let entries = adapter.parseEntries(pageDocument!);
 
@@ -219,28 +220,26 @@ export const search = async (
 };
 
 export const download = async (externalId: string, mirror: string) => {
-  console.log(`Starting download for ${externalId}`);
+  logger.debug(`Starting book download for ${externalId}`);
   const pageUrl = adapter.getPageURL(mirror);
-  console.log("Using " + pageUrl);
+
   const pageDocument = await attemptWithRetry(() => getDocument(pageUrl));
   const downloadUrl = adapter.getMainDownloadURLFromDocument(pageDocument!)!;
 
   const stream = await attemptWithRetry(() =>
     axios.get(downloadUrl, {
-      httpAgent: "Book App Version 1.0.0",
+      httpAgent: "Requira 1.0.0",
       responseType: "stream",
     }),
   );
-  console.log(downloadUrl);
 
   return await downloadFile({
     stream: stream!,
     onStart: (filename, total) => {
-      // ui
-      console.log(`Downloading ${filename}`);
+      logger.debug(`Downloading book ${filename} from ${downloadUrl}`);
     },
     onData: (filename, chunk, total) => {
-      // ui
+      logger.debug(`Downloading of book ${filename} is ${total}% complete`);
     },
   });
 };
@@ -265,19 +264,27 @@ export const queue = async (
       title,
     } = req.query;
 
-    const item = await queueItem("book", cover as string, id as string, {
-      id,
-      authors,
-      publisher,
-      year,
-      pages,
-      language,
-      size,
-      extension,
-      mirror,
-      cover,
-      title,
-    });
+    const item = await queueItem(
+      "book",
+      cover as string,
+      id as string,
+      {
+        id,
+        authors,
+        publisher,
+        year,
+        pages,
+        language,
+        size,
+        extension,
+        mirror,
+        cover,
+        title,
+      },
+      req.user!,
+    );
+
+    logger.info(`Queued book ${title} for download`);
 
     res.json(item);
   } catch (error) {
@@ -302,9 +309,9 @@ export const remove = async (
 
     if (req.query.remove === "true") {
       const bookPath = book.filepath;
-      console.log(`Deleting ${bookPath}`);
+      logger.info(`Deleting book at ${bookPath}`);
       fs.unlinkSync(bookPath);
-      console.log(`Deleted ${book.title}`);
+      logger.info(`Deleted book ${book.title}`);
     }
 
     if (req.query.avoid === "true") {
@@ -314,7 +321,7 @@ export const remove = async (
         },
       });
 
-      console.log(`Blacklisted ${book.external_id}`);
+      logger.info(`Blacklisted book with id ${book.external_id}`);
     }
 
     await prisma.book.delete({
@@ -323,7 +330,7 @@ export const remove = async (
       },
     });
 
-    console.log(`Removed ${book.title} from library`);
+    logger.info(`Removed book ${book.title} from library`);
   } catch (error) {
     next(error);
   }

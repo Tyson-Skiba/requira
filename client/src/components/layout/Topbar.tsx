@@ -17,6 +17,7 @@ import { UIMatch, useMatches, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { usersApi } from "../../api/users";
 import { Profile } from "../user/Profile";
+import { useActivities } from "../../context/ActivityContext";
 
 interface Handle {
   term: string;
@@ -53,10 +54,12 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export const Topbar: React.FC = () => {
   const { user } = useAuth();
+  const { unseen } = useActivities();
   const [avatar, setAvatar] = useState(user.avatar);
   const matches = useMatches() as UIMatch<unknown, Handle>[];
   const navigate = useNavigate();
   const { setSearchTerm } = useSearch();
+  const { setViewed } = useActivities();
   const [inputValue, setInputValue] = useState("");
   const [avatarAnchor, setAvatarAnchor] = useState<null | HTMLElement>(null);
 
@@ -70,6 +73,7 @@ export const Topbar: React.FC = () => {
 
   const handleAvatarClose = () => {
     setAvatarAnchor(null);
+    setViewed();
   };
 
   const placeholderTerm = matches.at(-1)?.handle?.term;
@@ -124,7 +128,7 @@ export const Topbar: React.FC = () => {
         <StyledBadge
           overlap="circular"
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          variant="dot"
+          variant={unseen ? "dot" : "standard"}
         >
           <Avatar
             sx={{

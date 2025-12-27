@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { prisma } from "../services/database";
-import { User } from "../db/prisma";
+import { Prisma, User } from "../db/prisma";
 
 // TODO: Reset password links
 
@@ -124,6 +124,51 @@ export const avatar = async (
     });
 
     res.json({ avatar: updatedUser.avatar });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const pageSize = 20;
+    const cursor = Number(req.query.cursor);
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: req.user.userId!,
+      },
+    });
+
+    const where: Prisma.ActivityLogWhereInput = user.canSeeFullLibrary
+      ? {}
+      : {
+          triggered_by_user_id: user.id,
+        };
+
+    const activities = await prisma.activityLog.findMany({
+      orderBy: {
+        id: "desc",
+      },
+      where,
+      take: pageSize + 1,
+      skip: cursor ? 1 : 0,
+      ...(cursor && {
+        cursor: { id: cursor },
+      }),
+    });
+
+    const hasNextPage = activities.length > pageSize;
+    const items = hasNextPage ? activities.slice(0, pageSize) : activities;
+
+    res.json({
+      items,
+      nextCursor: hasNextPage ? items.at(-1)?.id : null,
+    });
   } catch (error) {
     next(error);
   }

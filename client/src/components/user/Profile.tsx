@@ -9,12 +9,14 @@ import {
   Chip,
   Alert,
   Stack,
+  AlertProps,
 } from "@mui/material";
-import { useRef, ChangeEvent, useState } from "react";
+import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { authApi } from "../../api/auth";
 import { usersApi } from "../../api/users";
 import { useAuth } from "../../context/AuthContext";
 import { useThemeMode } from "../../context/ThemeModeContext";
+import { useActivities } from "../../context/ActivityContext";
 
 interface ProfileProps {
   width?: number;
@@ -83,11 +85,11 @@ const ThemeToggle = styled(Switch)<ThemeToggleProps>(({ theme, darkMode }) => ({
 
 export const Profile: React.FC<ProfileProps> = ({ width, onAvatarChange }) => {
   const { user, setUser } = useAuth();
+  const { activities, unseen, parseActivity, setViewed } = useActivities();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
     user?.avatar,
   );
-  const [activityOpen, setActivityOpen] = useState(true);
   const { mode, setMode } = useThemeMode();
 
   if (!user) return <Typography>Loading...</Typography>;
@@ -159,22 +161,14 @@ export const Profile: React.FC<ProfileProps> = ({ width, onAvatarChange }) => {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
-              onClick={() => setActivityOpen(!activityOpen)}
               sx={{ cursor: "pointer", my: 2 }}
             >
               <Typography variant="h6">Activity</Typography>
-              <Chip label={3} size="small" color="primary" />
+              {unseen ? (
+                <Chip label={unseen} size="small" color="primary" />
+              ) : null}
             </Box>
-            <Stack spacing={1}>
-              <Alert severity="success">[TODO - Finish]</Alert>
-              <Alert severity="error">
-                Could not download book - Harry Potter and the chamber of
-                secrets
-              </Alert>
-              <Alert severity="info">
-                Suddenly by British India is now available via the music library
-              </Alert>
-            </Stack>
+            <Stack spacing={1}>{activities.map(parseActivity)}</Stack>
           </Box>
         </Box>
       </Box>

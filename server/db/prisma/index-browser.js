@@ -158,7 +158,8 @@ exports.Prisma.SongScalarFieldEnum = {
   external_id: 'external_id',
   created_at: 'created_at',
   source: 'source',
-  cache_key: 'cache_key'
+  cache_key: 'cache_key',
+  owner_user_id: 'owner_user_id'
 };
 
 exports.Prisma.BookScalarFieldEnum = {
@@ -176,7 +177,17 @@ exports.Prisma.BookScalarFieldEnum = {
   cover: 'cover',
   filepath: 'filepath',
   created_at: 'created_at',
-  cache_key: 'cache_key'
+  cache_key: 'cache_key',
+  owner_user_id: 'owner_user_id'
+};
+
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  triggered_by_user_id: 'triggered_by_user_id',
+  type: 'type',
+  details: 'details',
+  entityId: 'entityId',
+  entityType: 'entityType'
 };
 
 exports.Prisma.SourceBlacklistScalarFieldEnum = {
@@ -200,6 +211,7 @@ exports.Prisma.ModelName = {
   Queue: 'Queue',
   Song: 'Song',
   Book: 'Book',
+  ActivityLog: 'ActivityLog',
   SourceBlacklist: 'SourceBlacklist'
 };
 

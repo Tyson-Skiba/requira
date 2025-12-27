@@ -9,6 +9,11 @@ import { MusicBrainzSearchResult } from "../../models/songs/music-brainz";
 import { Queue } from "../db/prisma";
 import { prisma } from "./database";
 import { LibGenEntry } from "../../models/books/lib-gen-entry";
+import { logger } from "./log-service";
+import {
+  downloadSuccessActivityType,
+  failedDownloadActivityType,
+} from "../../models/activity/activity-type";
 
 const sessions = new Map();
 
@@ -68,7 +73,7 @@ export const downloadSong = async (request: Queue) => {
         "flac",
       ],
       onProgress: (p) => {
-        console.log(`Downloading: ${video.url} ${p.percentage_str}`);
+        logger.debug(`Downloading: ${video.url} ${p.percentage_str}`);
       },
     });
 
@@ -127,7 +132,7 @@ export const downloadSong = async (request: Queue) => {
     fs.unlinkSync(tempFlac);
     if (coverPath) fs.unlinkSync(coverPath);
 
-    await prisma.song.create({
+    const created = await prisma.song.create({
       data: {
         recording_mbid: request.external_id,
         artist_mbid: artistMbid,
@@ -148,8 +153,21 @@ export const downloadSong = async (request: Queue) => {
         id: request.id,
       },
     });
+
+    await prisma.activityLog.create({
+      data: {
+        triggered_by_user_id: request.request_user_id,
+        type: downloadSuccessActivityType,
+        details: `${title} by ${artist} can now be found in the library`,
+        entityType: "song",
+        entityId: created.id,
+      },
+    });
+    logger.info(`Downloaded ${title} by ${artist}`);
   } catch (error) {
-    console.error(`ERROR: ${error}`);
+    logger.error(
+      `Unable to download song on attempt ${request.attempts} of 3 - ${request.data}: ${error}`,
+    );
 
     await prisma.queue.update({
       where: {
@@ -159,6 +177,15 @@ export const downloadSong = async (request: Queue) => {
         attempts: request.attempts + 1,
       },
     });
+
+    if (request.attempts === 3)
+      await prisma.activityLog.create({
+        data: {
+          triggered_by_user_id: request.request_user_id,
+          type: failedDownloadActivityType,
+          details: `Unable to download song ${JSON.parse(request.data).title} after 3 attempts`,
+        },
+      });
   }
 };
 
@@ -177,12 +204,9 @@ export const downloadBook = async (request: Queue) => {
       cover,
     } = JSON.parse(request.data) as LibGenEntry;
 
-    console.log(request.data);
-
     const { path: filepath } = await fetchBook(request.external_id, mirror);
 
-    /* TODO: Save cover to disk */
-    await prisma.book.create({
+    const created = await prisma.book.create({
       data: {
         authors,
         title,
@@ -204,8 +228,22 @@ export const downloadBook = async (request: Queue) => {
         id: request.id,
       },
     });
+
+    await prisma.activityLog.create({
+      data: {
+        triggered_by_user_id: request.request_user_id,
+        type: downloadSuccessActivityType,
+        details: `${title} by ${authors} can now be found in the library`,
+        entityType: "book",
+        entityId: created.id,
+      },
+    });
+
+    logger.info(`Downloaded ${title} by ${authors}`);
   } catch (error) {
-    console.error(`ERROR: ${error}`);
+    logger.error(
+      `Unable to download book on attempt ${request.attempts} of 3: ${error}`,
+    );
 
     await prisma.queue.update({
       where: {
@@ -215,5 +253,14 @@ export const downloadBook = async (request: Queue) => {
         attempts: request.attempts + 1,
       },
     });
+
+    if (request.attempts === 3)
+      await prisma.activityLog.create({
+        data: {
+          triggered_by_user_id: request.request_user_id,
+          type: failedDownloadActivityType,
+          details: `Unable to download book ${JSON.parse(request.data).title} after 3 attempts`,
+        },
+      });
   }
 };

@@ -1,5 +1,6 @@
 import { dataTypes, prisma } from "./database";
 import { downloadBook, downloadSong } from "./download-service";
+import { logger } from "./log-service";
 
 const pause = () =>
   new Promise<void>((resolve) => {
@@ -26,7 +27,7 @@ export class QueueProvider {
     });
 
     const updates = requests.map(async (request) => {
-      console.log(`processing request ${request.id}`);
+      logger.info(`Processing request ${request.id}`);
       if (request.type === dataTypes.music) await downloadSong(request);
       else if (request.type === dataTypes.book) await downloadBook(request);
     });

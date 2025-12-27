@@ -1,7 +1,10 @@
 import "dotenv/config";
+import { Request } from "express";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../db/prisma/client";
 import { hashPassword } from "../controllers/user-controller";
+import { queueActivityType } from "../../models/activity/activity-type";
+import { UserRoles } from "../../models/users/role";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
@@ -12,6 +15,8 @@ export const dataTypes = {
   music: 1,
   book: 2,
 };
+
+const approverRole: UserRoles = "Approver";
 
 export const createAdminAccount = async () => {
   const adminUser = await prisma.user.findFirst({
@@ -78,6 +83,7 @@ export const queueItem = async <T extends Record<string, unknown>>(
   cover: string,
   externalId: string,
   data: T,
+  requestUser: NonNullable<Request["user"]>,
 ) => {
   const item = await prisma.queue.create({
     data: {
@@ -85,9 +91,19 @@ export const queueItem = async <T extends Record<string, unknown>>(
       cover,
       data: JSON.stringify(data),
       external_id: externalId,
-      request_user_id: 1,
-      approver_user_id: 1,
+      request_user_id: requestUser.userId,
+      approver_user_id: requestUser.roles.includes(approverRole)
+        ? requestUser.userId
+        : null,
       attempts: 0,
+    },
+  });
+
+  await prisma.activityLog.create({
+    data: {
+      triggered_by_user_id: requestUser.userId,
+      type: queueActivityType,
+      details: `The ${type} ${data["title"]} has been added to the download queue`,
     },
   });
 

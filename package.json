@@ -39,9 +39,11 @@
     "multer": "^2.0.2",
     "music-metadata": "^11.10.3",
     "nanoid": "^5.1.6",
+    "notistack": "^3.0.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.10.1",
+    "winston": "^3.19.0",
     "xml2js": "^0.6.2",
     "ytdlp-nodejs": "^2.3.5"
   },
