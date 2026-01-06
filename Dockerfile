@@ -1,62 +1,50 @@
-# Deps
-FROM node:22.12.0-alpine AS deps
+# 1. Build client
+FROM node:22.12.0-alpine AS client-build
 WORKDIR /app
-
 COPY package.json yarn.lock ./
-
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile --network-timeout 600000
-    
-# Build client
-FROM deps AS client-build
-WORKDIR /app
-
+RUN yarn install --frozen-lockfile --network-timeout 600000
 COPY tsconfig*.json ./
 COPY vite.config.ts ./
 COPY client ./client
 COPY server ./server
 COPY models ./models
+RUN yarn build:client   
 
-RUN yarn build:client
-
-# Build server
-FROM deps AS server-build
+# 2. Build server
+FROM node:22.12.0-alpine AS server-build
 WORKDIR /app
 
 ENV DATABASE_URL=file:/requira/service.db
-
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --network-timeout 600000
 COPY tsconfig*.json ./
 COPY server ./server
 COPY models ./models
-COPY prisma.config.ts ./
-
+COPY prisma.config.ts ./prisma.config.ts
 RUN yarn build:server
+RUN mkdir -p ./dist/server/db
+RUN cp -R ./server/db/prisma ./dist/server/db/
+RUN mkdir -p /requira
 
-RUN mkdir -p ./dist/server/db \
- && cp -R ./server/db/prisma ./dist/server/db/ \
- && mkdir -p /requira
-
-# Final image
+# 3. Final image
 FROM node:22.12.0-alpine
 WORKDIR /app
 ENV NODE_ENV=production
-ENV DATABASE_URL=file:/requira/service.db
-
-RUN apk add --no-cache su-exec python3 py3-pip flac
 
 COPY --from=client-build /app/server/public ./server/public
 COPY --from=server-build /app/dist/server ./server/dist
 COPY --from=server-build /requira /requira
 
 COPY package.json yarn.lock ./
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile --production --network-timeout 600000
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
-COPY prisma.config.ts ./prisma.config.ts
-COPY server/prisma ./server/prisma
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+ENV DATABASE_URL=file:/requira/service.db
+COPY ./prisma.config.ts /app/prisma.config.ts 
+COPY ./server/prisma /app/server/prisma 
 
 EXPOSE 3022
+#CMD ["sh", "-c", "mkdir -p /requira && npx prisma migrate deploy --config=prisma.config.ts && exec node server/dist/api.js"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+RUN apk add --no-cache su-exec python3 py3-pip flac
 ENTRYPOINT ["/entrypoint.sh"]
