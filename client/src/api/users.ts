@@ -76,6 +76,14 @@ const updateAvatar = async (avatar: string) => {
   return data.avatar;
 };
 
+const generateApiKey = async () => {
+  const response = await fetch("/api/users/generate-api-key", {
+    method: "POST",
+  });
+  const { apiKey } = await response.json();
+  return String(apiKey);
+};
+
 export const usersApi = {
   getAll,
   create,
@@ -84,4 +92,5 @@ export const usersApi = {
   resetPassword,
   updateAvatar,
   getActivities,
+  generateApiKey,
 };

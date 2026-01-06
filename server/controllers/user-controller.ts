@@ -48,6 +48,28 @@ export const createUser = async (
   }
 };
 
+export const generateApiKey = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const uuid = crypto.randomUUID();
+    await prisma.user.update({
+      where: {
+        id: Number(req.user.userId),
+      },
+      data: {
+        api_key: uuid,
+      },
+    });
+
+    res.json({ apiKey: uuid });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const editUser = async (
   req: Request,
   res: Response,

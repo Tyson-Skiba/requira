@@ -1,12 +1,19 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { authApi } from "../api/auth";
 import { User } from "../../../models/users/user";
 
 interface AuthContextType {
   user: User;
   loading: boolean;
-  setUser: (user: User | undefined) => void;
+  setUser: Dispatch<SetStateAction<User | undefined>>;
 }
 
 const AuthContext = createContext<AuthContextType>({

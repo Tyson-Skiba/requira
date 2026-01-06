@@ -1398,6 +1398,7 @@ export namespace Prisma {
     isAdmin: boolean | null
     canSeeFullLibrary: boolean | null
     theme: string | null
+    api_key: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1413,6 +1414,7 @@ export namespace Prisma {
     isAdmin: boolean | null
     canSeeFullLibrary: boolean | null
     theme: string | null
+    api_key: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1428,6 +1430,7 @@ export namespace Prisma {
     isAdmin: number
     canSeeFullLibrary: number
     theme: number
+    api_key: number
     _all: number
   }
 
@@ -1453,6 +1456,7 @@ export namespace Prisma {
     isAdmin?: true
     canSeeFullLibrary?: true
     theme?: true
+    api_key?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1468,6 +1472,7 @@ export namespace Prisma {
     isAdmin?: true
     canSeeFullLibrary?: true
     theme?: true
+    api_key?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1483,6 +1488,7 @@ export namespace Prisma {
     isAdmin?: true
     canSeeFullLibrary?: true
     theme?: true
+    api_key?: true
     _all?: true
   }
 
@@ -1585,6 +1591,7 @@ export namespace Prisma {
     isAdmin: boolean
     canSeeFullLibrary: boolean
     theme: string
+    api_key: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -1619,6 +1626,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: boolean
+    api_key?: boolean
     requestedQueues?: boolean | User$requestedQueuesArgs<ExtArgs>
     approvedQueues?: boolean | User$approvedQueuesArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
@@ -1638,6 +1646,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: boolean
+    api_key?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1653,6 +1662,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: boolean
+    api_key?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -1668,9 +1678,10 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: boolean
+    api_key?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "avatar" | "email" | "password" | "requiresApproval" | "isApprover" | "musicLibraryPath" | "bookLibraryPath" | "isAdmin" | "canSeeFullLibrary" | "theme", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "avatar" | "email" | "password" | "requiresApproval" | "isApprover" | "musicLibraryPath" | "bookLibraryPath" | "isAdmin" | "canSeeFullLibrary" | "theme" | "api_key", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     requestedQueues?: boolean | User$requestedQueuesArgs<ExtArgs>
     approvedQueues?: boolean | User$approvedQueuesArgs<ExtArgs>
@@ -1700,6 +1711,7 @@ export namespace Prisma {
       isAdmin: boolean
       canSeeFullLibrary: boolean
       theme: string
+      api_key: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2138,6 +2150,7 @@ export namespace Prisma {
     readonly isAdmin: FieldRef<"User", 'Boolean'>
     readonly canSeeFullLibrary: FieldRef<"User", 'Boolean'>
     readonly theme: FieldRef<"User", 'String'>
+    readonly api_key: FieldRef<"User", 'String'>
   }
     
 
@@ -8282,7 +8295,8 @@ export namespace Prisma {
     bookLibraryPath: 'bookLibraryPath',
     isAdmin: 'isAdmin',
     canSeeFullLibrary: 'canSeeFullLibrary',
-    theme: 'theme'
+    theme: 'theme',
+    api_key: 'api_key'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -8441,6 +8455,7 @@ export namespace Prisma {
     isAdmin?: BoolFilter<"User"> | boolean
     canSeeFullLibrary?: BoolFilter<"User"> | boolean
     theme?: StringFilter<"User"> | string
+    api_key?: StringNullableFilter<"User"> | string | null
     requestedQueues?: QueueListRelationFilter
     approvedQueues?: QueueListRelationFilter
     activities?: ActivityLogListRelationFilter
@@ -8459,6 +8474,7 @@ export namespace Prisma {
     isAdmin?: SortOrder
     canSeeFullLibrary?: SortOrder
     theme?: SortOrder
+    api_key?: SortOrderInput | SortOrder
     requestedQueues?: QueueOrderByRelationAggregateInput
     approvedQueues?: QueueOrderByRelationAggregateInput
     activities?: ActivityLogOrderByRelationAggregateInput
@@ -8467,6 +8483,7 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     username?: string
+    api_key?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -8483,7 +8500,7 @@ export namespace Prisma {
     requestedQueues?: QueueListRelationFilter
     approvedQueues?: QueueListRelationFilter
     activities?: ActivityLogListRelationFilter
-  }, "id" | "username">
+  }, "id" | "username" | "api_key">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -8498,6 +8515,7 @@ export namespace Prisma {
     isAdmin?: SortOrder
     canSeeFullLibrary?: SortOrder
     theme?: SortOrder
+    api_key?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -8521,6 +8539,7 @@ export namespace Prisma {
     isAdmin?: BoolWithAggregatesFilter<"User"> | boolean
     canSeeFullLibrary?: BoolWithAggregatesFilter<"User"> | boolean
     theme?: StringWithAggregatesFilter<"User"> | string
+    api_key?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type QueueWhereInput = {
@@ -8929,6 +8948,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueCreateNestedManyWithoutRequest_userInput
     approvedQueues?: QueueCreateNestedManyWithoutApprover_userInput
     activities?: ActivityLogCreateNestedManyWithoutTriggered_byInput
@@ -8947,6 +8967,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueUncheckedCreateNestedManyWithoutRequest_userInput
     approvedQueues?: QueueUncheckedCreateNestedManyWithoutApprover_userInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTriggered_byInput
@@ -8964,6 +8985,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUpdateManyWithoutRequest_userNestedInput
     approvedQueues?: QueueUpdateManyWithoutApprover_userNestedInput
     activities?: ActivityLogUpdateManyWithoutTriggered_byNestedInput
@@ -8982,6 +9004,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUncheckedUpdateManyWithoutRequest_userNestedInput
     approvedQueues?: QueueUncheckedUpdateManyWithoutApprover_userNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTriggered_byNestedInput
@@ -9000,6 +9023,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -9014,6 +9038,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -9029,6 +9054,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type QueueCreateInput = {
@@ -9530,6 +9556,7 @@ export namespace Prisma {
     isAdmin?: SortOrder
     canSeeFullLibrary?: SortOrder
     theme?: SortOrder
+    api_key?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -9549,6 +9576,7 @@ export namespace Prisma {
     isAdmin?: SortOrder
     canSeeFullLibrary?: SortOrder
     theme?: SortOrder
+    api_key?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -9564,6 +9592,7 @@ export namespace Prisma {
     isAdmin?: SortOrder
     canSeeFullLibrary?: SortOrder
     theme?: SortOrder
+    api_key?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -10546,6 +10575,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     approvedQueues?: QueueCreateNestedManyWithoutApprover_userInput
     activities?: ActivityLogCreateNestedManyWithoutTriggered_byInput
   }
@@ -10563,6 +10593,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     approvedQueues?: QueueUncheckedCreateNestedManyWithoutApprover_userInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTriggered_byInput
   }
@@ -10584,6 +10615,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueCreateNestedManyWithoutRequest_userInput
     activities?: ActivityLogCreateNestedManyWithoutTriggered_byInput
   }
@@ -10601,6 +10633,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueUncheckedCreateNestedManyWithoutRequest_userInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTriggered_byInput
   }
@@ -10633,6 +10666,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     approvedQueues?: QueueUpdateManyWithoutApprover_userNestedInput
     activities?: ActivityLogUpdateManyWithoutTriggered_byNestedInput
   }
@@ -10650,6 +10684,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     approvedQueues?: QueueUncheckedUpdateManyWithoutApprover_userNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTriggered_byNestedInput
   }
@@ -10677,6 +10712,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUpdateManyWithoutRequest_userNestedInput
     activities?: ActivityLogUpdateManyWithoutTriggered_byNestedInput
   }
@@ -10694,6 +10730,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUncheckedUpdateManyWithoutRequest_userNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTriggered_byNestedInput
   }
@@ -10710,6 +10747,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueCreateNestedManyWithoutRequest_userInput
     approvedQueues?: QueueCreateNestedManyWithoutApprover_userInput
   }
@@ -10727,6 +10765,7 @@ export namespace Prisma {
     isAdmin?: boolean
     canSeeFullLibrary?: boolean
     theme?: string
+    api_key?: string | null
     requestedQueues?: QueueUncheckedCreateNestedManyWithoutRequest_userInput
     approvedQueues?: QueueUncheckedCreateNestedManyWithoutApprover_userInput
   }
@@ -10759,6 +10798,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUpdateManyWithoutRequest_userNestedInput
     approvedQueues?: QueueUpdateManyWithoutApprover_userNestedInput
   }
@@ -10776,6 +10816,7 @@ export namespace Prisma {
     isAdmin?: BoolFieldUpdateOperationsInput | boolean
     canSeeFullLibrary?: BoolFieldUpdateOperationsInput | boolean
     theme?: StringFieldUpdateOperationsInput | string
+    api_key?: NullableStringFieldUpdateOperationsInput | string | null
     requestedQueues?: QueueUncheckedUpdateManyWithoutRequest_userNestedInput
     approvedQueues?: QueueUncheckedUpdateManyWithoutApprover_userNestedInput
   }

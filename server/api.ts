@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
 import bookRoutes from "./routes/book";
 import songRoutes from "./routes/songs";
+import statsRoutes from "./routes/stats";
 import requestRoutes from "./routes/requests";
 import metadataRoutes from "./routes/metadata";
 import { errorHandler } from "./middleware/error-handler";
@@ -48,6 +49,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/songs", songRoutes);
+app.use("/api/stats", statsRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/metadata", metadataRoutes);
 

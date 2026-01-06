@@ -10,6 +10,8 @@ import {
   Alert,
   Stack,
   AlertProps,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
 import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { authApi } from "../../api/auth";
@@ -17,6 +19,7 @@ import { usersApi } from "../../api/users";
 import { useAuth } from "../../context/AuthContext";
 import { useThemeMode } from "../../context/ThemeModeContext";
 import { useActivities } from "../../context/ActivityContext";
+import { ArrowPathIcon, ClipboardIcon } from "@heroicons/react/24/outline";
 
 interface ProfileProps {
   width?: number;
@@ -85,7 +88,7 @@ const ThemeToggle = styled(Switch)<ThemeToggleProps>(({ theme, darkMode }) => ({
 
 export const Profile: React.FC<ProfileProps> = ({ width, onAvatarChange }) => {
   const { user, setUser } = useAuth();
-  const { activities, unseen, parseActivity, setViewed } = useActivities();
+  const { activities, unseen, parseActivity } = useActivities();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
     user?.avatar,
@@ -143,9 +146,51 @@ export const Profile: React.FC<ProfileProps> = ({ width, onAvatarChange }) => {
 
         <Box display="flex" flexDirection="column" gap={2} width="100%">
           <TextField label="Username" defaultValue={user.username} fullWidth />
+          <TextField
+            label="api key"
+            defaultValue={user.api_key}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      sx={{ mr: 0.5 }}
+                      onClick={() =>
+                        navigator.clipboard.writeText(user.api_key)
+                      }
+                    >
+                      <ClipboardIcon height={20} width={20} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+            disabled
+            fullWidth
+          />
 
           <Button
             color="error"
+            variant="outlined"
+            fullWidth
+            onClick={async () => {
+              const apiKey = await usersApi.generateApiKey();
+              setUser((user) =>
+                user
+                  ? {
+                      ...user,
+                      api_key: apiKey,
+                    }
+                  : undefined,
+              );
+            }}
+          >
+            Regenerate Api Key
+          </Button>
+
+          <Button
+            color="primary"
             variant="outlined"
             fullWidth
             onClick={async () => {

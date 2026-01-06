@@ -20,6 +20,7 @@ model User {
   isAdmin           Boolean @default(false)
   canSeeFullLibrary Boolean @default(true)
   theme             String @default("light")
+  api_key           String? @unique
   requestedQueues   Queue[] @relation("RequestUser")
   approvedQueues    Queue[] @relation("ApproverUser")
 

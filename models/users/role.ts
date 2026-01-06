@@ -1,1 +1,1 @@
-export type UserRoles = "Admin" | "User" | "Approver";
+export type UserRoles = "Admin" | "User" | "Approver" | "ApiUser";

@@ -129,7 +129,8 @@ exports.Prisma.UserScalarFieldEnum = {
   bookLibraryPath: 'bookLibraryPath',
   isAdmin: 'isAdmin',
   canSeeFullLibrary: 'canSeeFullLibrary',
-  theme: 'theme'
+  theme: 'theme',
+  api_key: 'api_key'
 };
 
 exports.Prisma.QueueScalarFieldEnum = {

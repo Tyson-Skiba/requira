@@ -8,4 +8,5 @@ export interface User {
   isApprover: boolean;
   canSeeFullLibrary: boolean;
   theme: "light" | "dark";
+  api_key: string;
 }

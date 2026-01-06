@@ -84,7 +84,6 @@ export const ActivityProvider: React.FC<React.PropsWithChildren> = ({
     newItems.forEach((a) =>
       enqueueSnackbar(parseActivity(a, true), {
         anchorOrigin: { vertical: "bottom", horizontal: "right" },
-        autoHideDuration: 50000000,
         content: (key, message) => (
           <Box
             key={key}
@@ -113,7 +112,7 @@ export const ActivityProvider: React.FC<React.PropsWithChildren> = ({
 
   useEffect(() => {
     fetchNewActivities(true);
-    const id = setInterval(fetchNewActivities, 3000);
+    const id = setInterval(fetchNewActivities, 30000);
     return () => clearInterval(id);
   }, []);
 
